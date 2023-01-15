@@ -1,8 +1,10 @@
 ---
 title: "MSGARCH-model strategy-test"
-output: html_notebook
-editor_options: 
-  markdown: 
+output:
+  html_document:
+    df_print: paged
+editor_options:
+  markdown:
     wrap: 72
 ---
 
