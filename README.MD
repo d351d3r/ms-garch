@@ -3,14 +3,14 @@ Using the MSGARCH library on R
 
 About MSGARCH library: http://keblu.github.io/MSGARCH/
 
-Examples:
+## Examples:
 
 Ardia, D., Bluteau, K., Boudt, K., Catania, L., Trottier, D.-A. (2019).
 Markov-switching GARCH models in R: The MSGARCH package.
 Journal of Statistical Software, 91(4), 1-38.
 https://doi.org/10.18637/jss.v091.i04
 
-Other references
+## Other references
 
 Ardia, D., Bluteau, K., Boudt, K., Catania, L. (2018).
 Forecasting risk with Markov-switching GARCH models: A large-scale performance study

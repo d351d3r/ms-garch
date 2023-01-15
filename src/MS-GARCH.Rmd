@@ -1,129 +1,10 @@
 ---
-title: "R Notebook"
+title: "MSGARCH-model strategy-test"
 output: html_notebook
 editor_options: 
   markdown: 
     wrap: 72
 ---
-
-This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you
-execute code within the notebook, the results appear beneath the code.
-
-Try executing this chunk by clicking the *Run* button within the chunk
-or by placing your cursor inside it and pressing *Cmd+Shift+Enter*.
-
-```{r}
-plot(cars)
-```
-
-Add a new chunk by clicking the *Insert Chunk* button on the toolbar or
-by pressing *Cmd+Option+I*.
-
-When you save the notebook, an HTML file containing the code and output
-will be saved alongside it (click the *Preview* button or press
-*Cmd+Shift+K* to preview the HTML file).
-
-The preview shows you a rendered HTML copy of the contents of the
-editor. Consequently, unlike *Knit*, *Preview* does not run any R code
-chunks. Instead, the output of the chunk when it was last run in the
-editor is displayed.
-
-# Package MSGARCH
-
-```{r}
-rm(list = ls())
-options(prompt = "R> ", continue = "+  ", width = 70,
-        digits = 4, max.print = 80, useFancyQuotes = FALSE)
-tmp <- sessionInfo()
-nam <- paste0("PART_I_R", tmp$R.version$major, ".",
-              tmp$R.version$minor, "_", tmp$R.version$os)
-sink(file = paste0("sink_", nam, ".txt"), append = FALSE, split = TRUE) # output printed in txt
-print(tmp)
-```
-
-```{r}
-cat("\n\n")
-cat("SECTION 3.1\n")
-cat("-----------\n\n")
-
-library("MSGARCH")
-spec <- CreateSpec()
-summary(spec)
-```
-
-```{r}
-cat("\n\n")
-cat("SECTION 3.1\n")
-cat("-----------\n\n")
-
-library("MSGARCH")
-spec <- CreateSpec()
-summary(spec)
-
-```
-
-\## Example 1: A single-regime model
-
-```{r}
-spec <- CreateSpec(variance.spec = list(model = "sGARCH"),
-                   distribution.spec = list(distribution = "norm"))
-```
-
-\## Example 2: A model with heterogeneous regimes
-
-```{r}
-spec <- CreateSpec(variance.spec = list(model = c("sGARCH", "tGARCH", "eGARCH")),
-                   distribution.spec = list(distribution = c("snorm", "sstd", "sged")))
-```
-
-\
-\## Example 3: A model with non-switching shape parametersspec \<-
-CreateSpec(variance.spec =
-
-```{r}
-spec <- CreateSpec(variance.spec = list(model = c("sGARCH", "sGARCH")),
-                   distribution.spec = list(distribution = c("sstd", "sstd")),
-                   constraint.spec = list(regime.const = c("nu", "xi")))
-```
-
-```{r}
-cat("\n\n")
-cat("SECTION 3.3\n")
-cat("-----------\n\n")
-
-pred <- predict(fit.ml, nahead = 5, do.return.draw = TRUE)
-pred$vol
-
-pred$draw[, 1:4]
-```
-
-```{r}
-cat("\n\n")
-cat("SECTION 3.4\n")
-cat("-----------\n\n")
-
-risk <- Risk(fit.ml, alpha = c(0.01, 0.05), nahead = 5)
-risk$ES
-```
-
-```{r}
-cat("\n\n")
-cat("SECTION 3.5\n")
-cat("-----------\n\n")
-
-simulate(fit.ml, nsim = 2, nahead = 4, nburn = 500)
-
-BIC(fit.ml)
-
-sr.fit <- ExtractStateFit(fit.ml)
-risk1 <- Risk(sr.fit[[1]], alpha = 0.05, nahead = 5)
-risk2 <- Risk(sr.fit[[2]], alpha = 0.05, nahead = 5)
-VaR <- cbind(risk1$VaR, risk2$VaR)
-colnames(VaR) <- c("State 1", "State 2")
-VaR
-
-sink()
-```
 
 ```{r}
 rm(list = ls())
@@ -135,8 +16,10 @@ nam <- paste0("PART_II_R", tmp$R.version$major, ".",
               tmp$R.version$minor, "_", tmp$R.version$os)
 sink(file = paste0("sink_", nam, ".txt"), append = FALSE, split = TRUE) # output printed in txt
 print(tmp)
+```
 
 ## load SMI
+```{r}
 data("SMI", package = "MSGARCH")
 
 ## Create MS(2)-GJR-std specification (Ardia 2008 and Ardia et al. 2008)
@@ -150,7 +33,9 @@ fit.ml <- FitML(ms2.gjr.s, data = SMI)
 
 ## Summary
 summary(fit.ml)
+```
 
+```{r}
 ## Unconditional vol
 set.seed(1234)
 sqrt(250) * sapply(ExtractStateFit(fit.ml), UncVol)
@@ -167,8 +52,11 @@ ctr <- list(nmcmc = nmcmc, nburn = nburn,
             nthin = nthin, par0 = fit.ml$par)
 fit.mcmc <- FitMCMC(ms2.gjr.s, data = SMI, ctr = ctr)
 summary(fit.mcmc)
+```
 
 ## Convergence of the chain
+
+```{r}
 #par(mfrow = c(3, 4))
 #coda::traceplot(fit.MCMC$par)
 #coda::heidel.diag(fit.MCMC$par)
@@ -213,9 +101,8 @@ for (i in 1:nrow(draws)) {
 }
 ```
 
-```{r}
 ## Backtesting
-
+```{r}
 ## Create GJR-std specification for comparison
 gjr.s <- CreateSpec(variance.spec = list(model = "gjrGARCH"),
                     distribution.spec = list(distribution = "std"),
@@ -264,6 +151,7 @@ for (i in 1:n.ots) {
 }
 ```
 
+## Test the VaR
 ```{r}
 ## Test the VaR
 # install.packages("GAS")
