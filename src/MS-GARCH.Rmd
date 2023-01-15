@@ -1,8 +1,12 @@
 ---
 title: "MSGARCH-model strategy-test"
 output:
-  html_document:
-    df_print: paged
+  pdf_document:
+    toc: true
+    toc_depth: 2
+    keep_tex: true
+    latex_engine: xelatex
+
 editor_options:
   markdown:
     wrap: 72
