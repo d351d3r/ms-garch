@@ -15,6 +15,7 @@ editor_options:
 ```{r}
 rm(list = ls())
 library("MSGARCH")
+library("strucchange")
 options(prompt = "R> ", continue = "+  ", width = 70,
         digits = 4, max.print = 80, useFancyQuotes = FALSE)
 tmp <- sessionInfo()
@@ -24,8 +25,19 @@ sink(file = paste0("sink_", nam, ".txt"), append = FALSE, split = TRUE) # output
 print(tmp)
 ```
 
-## load SMI
+## load data
 ```{r}
+rm(list = ls())
+library("MSGARCH")
+options(prompt = "R> ", continue = "+  ", width = 70,
+        digits = 4, max.print = 80, useFancyQuotes = FALSE)
+tmp <- sessionInfo()
+nam <- paste0("PART_II_R", tmp$R.version$major, ".",
+              tmp$R.version$minor, "_", tmp$R.version$os)
+sink(file = paste0("sink_", nam, ".txt"), append = FALSE, split = TRUE) # output printed in txt
+print(tmp)
+
+## load SMI
 data("SMI", package = "MSGARCH")
 
 ## Create MS(2)-GJR-std specification (Ardia 2008 and Ardia et al. 2008)
@@ -33,13 +45,20 @@ ms2.gjr.s <- CreateSpec(variance.spec = list(model = "gjrGARCH"),
                         distribution.spec = list(distribution = "std"),
                         switch.spec = list(K = 2),
                         constraint.spec = list(regime.const = "nu"))
+```
 
+
+```{r}
 ## ML estimation
 fit.ml <- FitML(ms2.gjr.s, data = SMI)
+```
 
+
+```{r}
 ## Summary
 summary(fit.ml)
 ```
+
 
 ```{r}
 ## Unconditional vol
@@ -63,7 +82,7 @@ summary(fit.mcmc)
 ## Convergence of the chain
 
 ```{r}
-#par(mfrow = c(3, 4))
+par(mfrow = c(3, 4))
 #coda::traceplot(fit.MCMC$par)
 #coda::heidel.diag(fit.MCMC$par)
 #coda::acfplot(fit.MCMC$par)
@@ -160,7 +179,7 @@ for (i in 1:n.ots) {
 ## Test the VaR
 ```{r}
 ## Test the VaR
-# install.packages("GAS")
+#install.packages("GAS")
 library("GAS")
 CC.pval <- DQ.pval <- vector("double", length(models))
 for (j in 1:length(models)) {
